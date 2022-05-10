@@ -6,7 +6,7 @@
 /*   By: lgiband <lgiband@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/04 15:46:23 by lgiband           #+#    #+#             */
-/*   Updated: 2022/05/10 12:18:03 by lgiband          ###   ########.fr       */
+/*   Updated: 2022/05/10 14:16:16 by lgiband          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -121,7 +121,7 @@ char	*get_next_line(int fd)
 	char		*prev_read;
 	char		*result;
 
-	if (fd < 0 || BUFFER_SIZE < 0 || fd > 1023)
+	if (fd < 0 || BUFFER_SIZE <= 0 || fd > 1023)
 		return (0);
 	prev_read = ft_copy(save[fd]);
 	prev_read = ft_read(fd, prev_read);
