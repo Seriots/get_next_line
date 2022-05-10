@@ -6,11 +6,11 @@
 /*   By: lgiband <lgiband@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/04 15:46:23 by lgiband           #+#    #+#             */
-/*   Updated: 2022/05/05 10:58:39 by lgiband          ###   ########.fr       */
+/*   Updated: 2022/05/10 12:18:03 by lgiband          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "get_next_line.h"
+#include "get_next_line_bonus.h"
 
 char	*ft_cut_last_read(char *prev_read)
 {
@@ -72,13 +72,17 @@ char	*ft_read(int fd, char *prev_read)
 
 	buf_tampon = malloc(sizeof(char) * (BUFFER_SIZE + 1));
 	if (!buf_tampon)
+	{
+		free(prev_read);
 		return (0);
+	}
 	readed = 1;
 	while (!(ft_strchr(prev_read, '\n')) && readed != 0)
 	{
 		readed = read(fd, buf_tampon, BUFFER_SIZE);
 		if (readed == -1)
 		{
+			free(prev_read);
 			free(buf_tampon);
 			return (0);
 		}
@@ -89,22 +93,49 @@ char	*ft_read(int fd, char *prev_read)
 	return (prev_read);
 }
 
+char	*ft_copy(char *src)
+{
+	int		size;
+	int		i;
+	char	*dest;
+
+	i = 0;
+	if (!src)
+		return (0);
+	size = ft_strlen(src);
+	dest = malloc(sizeof(char) * (size + 1));
+	if (!dest)
+		return (0);
+	dest[size] = 0;
+	while (i < size)
+	{
+		dest[i] = src[i];
+		i ++;
+	}
+	return (dest);
+}
+
 char	*get_next_line(int fd)
 {
-	static char	*prev_read[1024];
+	static char	save[1024][BUFFER_SIZE + 1];
+	char		*prev_read;
 	char		*result;
 
 	if (fd < 0 || BUFFER_SIZE < 0 || fd > 1023)
 		return (0);
-	prev_read[fd] = ft_read(fd, prev_read[fd]);
-	if (prev_read[fd] == 0)
+	prev_read = ft_copy(save[fd]);
+	prev_read = ft_read(fd, prev_read);
+	if (prev_read == 0)
 		return (0);
-	result = ft_get_line(prev_read[fd]);
-	if (result[0] == 0)
+	result = ft_get_line(prev_read);
+	if (result && result[0] == 0)
 	{
+		free(prev_read);
 		free(result);
 		return (0);
 	}
-	prev_read[fd] = ft_cut_last_read(prev_read[fd]);
+	prev_read = ft_cut_last_read(prev_read);
+	ft_copy2(save[fd], prev_read);
+	free(prev_read);
 	return (result);
 }

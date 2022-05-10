@@ -6,7 +6,7 @@
 /*   By: lgiband <lgiband@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/05 09:24:04 by lgiband           #+#    #+#             */
-/*   Updated: 2022/05/05 10:33:31 by lgiband          ###   ########.fr       */
+/*   Updated: 2022/05/10 12:16:52 by lgiband          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,7 +72,10 @@ char	*ft_read(int fd, char *prev_read)
 
 	buf_tampon = malloc(sizeof(char) * (BUFFER_SIZE + 1));
 	if (!buf_tampon)
+	{
+		free(prev_read);
 		return (0);
+	}
 	readed = 1;
 	while (!(ft_strchr(prev_read, '\n')) && readed != 0)
 	{
@@ -80,6 +83,7 @@ char	*ft_read(int fd, char *prev_read)
 		if (readed == -1)
 		{
 			free(buf_tampon);
+			free(prev_read);
 			return (0);
 		}
 		buf_tampon[readed] = 0;
@@ -89,22 +93,49 @@ char	*ft_read(int fd, char *prev_read)
 	return (prev_read);
 }
 
+char	*ft_copy(char *src)
+{
+	int		size;
+	char	*dest;
+	int		i;
+
+	i = 0;
+	if (!src)
+		return (0);
+	size = ft_strlen(src);
+	dest = malloc(sizeof(char) * (size + 1));
+	if (!dest)
+		return (0);
+	dest[size] = 0;
+	while (i < size)
+	{
+		dest[i] = src[i];
+		i ++;
+	}
+	return (dest);
+}
+
 char	*get_next_line(int fd)
 {
-	static char	*prev_read;
+	static char	save[BUFFER_SIZE + 1];
+	char		*prev_read;
 	char		*result;
 
-	if (fd < 0 || BUFFER_SIZE < 0)
+	if (fd < 0 || BUFFER_SIZE <= 0 || fd > 1023)
 		return (0);
+	prev_read = ft_copy(save);
 	prev_read = ft_read(fd, prev_read);
 	if (prev_read == 0)
 		return (0);
 	result = ft_get_line(prev_read);
-	if (result[0] == 0)
+	if (result && result[0] == 0)
 	{
+		free(prev_read);
 		free(result);
 		return (0);
 	}
 	prev_read = ft_cut_last_read(prev_read);
+	ft_copy2(save, prev_read);
+	free(prev_read);
 	return (result);
 }

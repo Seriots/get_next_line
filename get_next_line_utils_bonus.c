@@ -6,11 +6,11 @@
 /*   By: lgiband <lgiband@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/04 15:47:03 by lgiband           #+#    #+#             */
-/*   Updated: 2022/05/05 10:55:27 by lgiband          ###   ########.fr       */
+/*   Updated: 2022/05/09 16:00:41 by lgiband          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "get_next_line.h"
+#include "get_next_line_bonus.h"
 
 size_t	ft_strlen(const char *s)
 {
@@ -53,6 +53,11 @@ char	*ft_strjoin(char *s1, char *s2)
 	else
 		s1_size = ft_strlen(s1);
 	s2_size = ft_strlen(s2);
+	if (s1_size + s2_size == 0)
+	{
+		free(s1);
+		return (0);
+	}
 	result = malloc(sizeof(char) * (s1_size + s2_size + 1));
 	if (!result)
 		return (0);
@@ -85,4 +90,26 @@ char	*ft_strchr(const char *s, int c)
 		return (ptr);
 	}
 	return (0);
+}
+
+void	ft_copy2(char *dest, char *src)
+{
+	int	size;
+	int	i;
+
+	i = 0;
+	if (!dest)
+		return ;
+	if (!src)
+	{
+		dest[0] = 0;
+		return ;
+	}
+	size = ft_strlen(src);
+	dest[size] = 0;
+	while (i < size)
+	{
+		dest[i] = src[i];
+		i ++;
+	}
 }
